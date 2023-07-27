@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Sawaal Karo</string>
+    <string name="todo">TODO</string>
+    <string name="enter_user_name">Enter User Name</string>
+    <string name="enter_your_password">Enter your Password</string>
+    <string name="login">Login</string>
+    <string name="new_user_register_here"><u><b>New User ? Register Here</b></u></string>
+    <string name="log_out">Log Out</string>
+    <string name="share">share</string>
+    <string name="logout">Logout</string>
+    <string name="already_a_user_login_here"><u><b>Already a User ? Login Here</b></u></string>
+</resources>

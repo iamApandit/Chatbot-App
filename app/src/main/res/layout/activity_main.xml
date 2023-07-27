@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/constraint_layout"
+    tools:context="com.example.sawaalkaro.MainActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/idRVChats"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/idRLMsg"/>
+
+    <RelativeLayout
+        android:id="@+id/idRLMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <EditText
+            android:id="@+id/idEDtMessage"
+            android:layout_width="347dp"
+            android:layout_height="55dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="7dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toStartOf="@+id/idFABSend"
+            android:autofillHints=""
+            android:background="@color/white"
+            android:backgroundTint="#5C5959"
+            android:hint="    Enter Message"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="#CFC6C6"
+            tools:ignore="HardcodedText,TextFields" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/idFABSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:backgroundTint="#5C5959"
+            android:contentDescription="@string/todo"
+            android:src="@drawable/ic_send"
+            app:fabCustomSize="45dp"
+            tools:ignore="ContentDescription" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

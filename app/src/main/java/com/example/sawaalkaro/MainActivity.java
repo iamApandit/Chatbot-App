@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,8 +24,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     public static final MediaType JSON
             = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client = new OkHttpClient.Builder()
-            .readTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(62, TimeUnit.SECONDS)
             .build();
 
 
@@ -93,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
-
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -102,11 +104,30 @@ public class MainActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account!=null){
-            String personName = account.getDisplayName();
-            String personEmail = account.getEmail();
-        }
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                chatsModalArrayList.clear();
+
+                for (DataSnapshot snapshot1 : snapshot.getChildren()){
+                    ChatsModal chatMessage = snapshot1.getValue(ChatsModal.class);
+                    if (chatMessage != null){
+                        chatsModalArrayList.add(chatMessage);
+                    }
+                }
+                chatAdapter.notifyDataSetChanged();
+                chatsRv.smoothScrollToPosition(chatAdapter.getItemCount());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "Database Error:"+ error.getMessage());
+
+            }
+        };
+
+        chatRef.addValueEventListener(valueEventListener);
+
 
         sendMsgFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "please enter your message", Toast.LENGTH_SHORT).show();
 
                 }else {
-                    //String messageText = userMsgEdt.getText().toString();
                     sendMessage();
                 }
                 String question = userMsgEdt.getText().toString().trim();
@@ -133,11 +153,6 @@ public class MainActivity extends AppCompatActivity {
         String messageText = userMsgEdt.getText().toString();
         ChatsModal userMessage = new ChatsModal(messageText, "user", System.currentTimeMillis());
         this.chatRef.push().setValue(userMessage);
-
-        /*String replyText = ;
-        ChatsModal botMessage = new ChatsModal(replyText, "bot", System.currentTimeMillis());
-        this.chatRef.push().setValue(botMessage);*/
-
     }
 
     void  getResponse(String message,String sender){
@@ -198,6 +213,8 @@ public class MainActivity extends AppCompatActivity {
                                         .getJSONObject("message")
                                                 .getString("content");
                         addResponse(result.trim());
+
+                        replyText(result);
                     }catch (JSONException e){
                         e.printStackTrace();
                     }
@@ -208,7 +225,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
 
+    public void replyText(String botResponse){
+        ChatsModal botMessage = new ChatsModal(botResponse, "bot", System.currentTimeMillis());
+        this.chatRef.push().setValue(botMessage);
     }
 
 
